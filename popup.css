@@ -1,0 +1,124 @@
+/* File: popup-styles.css */
+
+/* Beautiful popup styling */
+.beautiful-popup .leaflet-popup-content-wrapper,
+.beautiful-popup .leaflet-popup-tip {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    border: 2px solid rgba(255,255,255,0.2);
+}
+
+.beautiful-popup .leaflet-popup-content {
+    margin: 15px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+}
+
+.beautiful-popup .leaflet-popup-close-button {
+    color: white !important;
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.center-popup {
+    min-width: 280px;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.popup-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid rgba(255,255,255,0.2);
+}
+
+.popup-header h3 {
+    margin: 0;
+    color: white;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.status-badge {
+    background: #4CAF50;
+    color: white;
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.popup-body {
+    margin: 15px 0;
+}
+
+.info-row {
+    display: flex;
+    align-items: center;
+    margin-bottom: 8px;
+    color: rgba(255,255,255,0.9);
+}
+
+.info-row .icon {
+    margin-right: 10px;
+    font-size: 16px;
+    width: 20px;
+}
+
+.popup-footer {
+    display: flex;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.btn-primary, .btn-secondary {
+    flex: 1;
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background: #FF6B6B;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #FF5252;
+    transform: translateY(-1px);
+}
+
+.btn-secondary {
+    background: rgba(255,255,255,0.2);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+
+.btn-secondary:hover {
+    background: rgba(255,255,255,0.3);
+}
+
+/* Animation */
+.beautiful-popup .leaflet-popup-content-wrapper {
+    animation: popupFadeIn 0.3s ease-out;
+}
+
+@keyframes popupFadeIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}

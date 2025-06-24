@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>E-Samridhi Procurement Map</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+
+  <style>
+    
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body,
+    html {
+      height: 100%;
+      width: 100%;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+    }
+
+    nav {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      padding: 14px 0;
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+      z-index: 1000;
+      text-align: center;
+    }
+
+    nav h1 {
+      font-size: 22px;
+      font-weight: bold;
+      letter-spacing: 1px;
+      color: white;
+      text-shadow: 
+        0 1px 0 rgba(0, 0, 0, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    #map {
+      position: absolute;
+      top: 60px;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      filter:
+    drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.2))  /* Main shadow */
+    drop-shadow(-1px -1px 3px rgba(255, 255, 255, 0.3)) 
+    brightness(1.02)
+    contrast(1.03);
+    
+    }
+
+    .leaflet-overlay-pane svg {
+      filter: 
+        drop-shadow(2px 2px 5px rgba(0,0,0,0.35))
+        drop-shadow(-1px -1px 3px rgba(255,255,255,0.9))
+        drop-shadow(0 0 2px rgba(0,0,0,0.25));
+    }
+
+    .leaflet-overlay-pane path {
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+    
+
+    .embossed-border {
+      filter: 
+        drop-shadow(1px 1px 3px rgba(0,0,0,0.45))
+        drop-shadow(-0.5px -0.5px 2px rgba(255,255,255,0.95));
+    }
+
+    #resetBtn {
+      position: fixed;
+      top: 80px;
+      right: 20px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 10px 16px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 14px;
+      font-weight: 600;
+      z-index: 1100;
+      box-shadow: 
+        0 4px 15px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+      transition: all 0.3s ease;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    #resetBtn:hover {
+      transform: translateY(-2px);
+      box-shadow: 
+        0 6px 20px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.4),
+        0 4px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    #resetBtn:active {
+      transform: translateY(0);
+      box-shadow: 
+        0 2px 8px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+    }
+    .custom-popup-class .leaflet-popup-content-wrapper {
+  background: #fff;
+  color: #222;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(44, 62, 80, 0.18);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  border: none;
+  padding: 0;
+}
+
+.custom-popup-class .leaflet-popup-content {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.custom-popup-class .leaflet-popup-tip {
+  background: #fff;
+}
+
+.custom-popup {
+  padding: 0;
+  min-width: 260px;
+  max-width: 320px;
+}
+
+.popup-img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  border-top-left-radius: 16px;
+  border-top-right-radius: 16px;
+  border-bottom-left-radius: 0;
+  border-bottom-right-radius: 0;
+  display: block;
+  margin: 0;
+}
+
+.custom-popup-content {
+  padding: 16px 18px 12px 18px;
+}
+
+.custom-popup h3 {
+  margin: 0 0 12px 0;
+  font-size: 1.25em;
+  color: #22223b;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.custom-popup p {
+  margin: 4px 0 0 0;
+  font-size: 0.98em;
+  color: #555;
+  line-height: 1.5;
+}
+
+.popup-link {
+  display: inline-block;
+  margin-top: 14px;
+  padding: 10px 24px;
+  background: linear-gradient(90deg, #4f46e5 0%, #7c3aed 100%);
+  color: #fff !important;
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 1em;
+  box-shadow: 0 2px 8px rgba(102, 126, 234, 0.10);
+  transition: background 0.2s, box-shadow 0.2s;
+  border: none;
+  text-align: center;
+}
+
+.popup-link:hover {
+  background: linear-gradient(90deg, #4338ca 0%, #6d28d9 100%);
+  box-shadow: 0 4px 16px rgba(102, 126, 234, 0.16);
+  color: #fff !important;
+  text-decoration: none;
+}
+
+@media (max-width: 500px) {
+  .custom-popup {
+    min-width: 180px;
+    max-width: 95vw;
+  }
+  .popup-img {
+    height: 90px;
+  }
+  .custom-popup-content {
+    padding: 10px 8px 8px 8px;
+  }
+  .leaflet-overlay-pane svg {
+  filter:
+    drop-shadow(1.5px 1.5px 2px rgba(0, 0, 0, 0.2))     
+    drop-shadow(-1px -1px 2px rgba(255, 255, 255, 0.7)) 
+    drop-shadow(0px 0px 1px rgba(0, 0, 0, 0.1));        
+  }
+}
+
+
+  
+
+
+  </style>
+</head>
+
+<body>
+
+  <nav>
+    <h1>E-Samridhi Procurement Map</h1>
+  </nav>
+
+  <button id="resetBtn">Reset View</button>
+
+  <div id="map"></div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+  <script>
+    const map = L.map('map').setView([22.9734, 78.6569], 5);
+    
+
+    const baseLayer = L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19,
+      attribution: '© OpenStreetMap contributors'
+    }).addTo(map);
+
+    let defaultBounds;
+
+    fetch("india.json")
+      .then(res => res.json())
+      .then(indiaData => {
+
+        //STYLE NUMBER -1(HEAVY EMBOSSED)
+        const embossedLayers = [
+  { weight: 12, opacity: 0.03, color: '#000000', offset: [-2, -2] }, // outer blur
+ { weight: 8, opacity: 0.04, color: '#222222', offset: [-2, -2] },   // soft shadow
+  { weight: 5, opacity: 0.06, color: '#444444', offset: [-2, -2] },   // darker
+  { weight: 3, opacity: 0.10, color: '#dddddd', offset: [-2, -2] },   // inner highlight
+  { weight: 1.5, opacity: 0.6, color: '#444444', offset: [-2, -2] }   // definition
+];
+        //STYLE NUMBER -2(LIGHT EMBOSSED)
+
+//  const embossedLayers = [
+//  { weight: 8, opacity: 0.01, color: '#555555', offset: [-2, -2] },   // soft outer shadow
+//  { weight: 6, opacity: 0.02, color: '#666666', offset: [-2, -2] },   // softer mid shadow
+//  { weight: 3, opacity: 0.025, color: '#888888', offset: [-2, -2] },  // medium shadow
+// { weight: 2, opacity: 0.04, color: '#eeeeee', offset: [-2, -2] },   // gentle highlight
+//  { weight: 1, opacity: 0.2, color: '#aaaaaa', offset: [-2, -2] }     // fine edge
+// ]; 
+
+
+
+
+        embossedLayers.forEach((layerStyle, index) => {
+          const layer = L.geoJSON(indiaData, {
+            style: {
+              color: layerStyle.color,
+              weight: layerStyle.weight,
+              opacity: layerStyle.opacity,
+              fillOpacity: 0,
+              lineCap: 'round',
+              lineJoin: 'round'
+            }
+          });
+
+          // Apply transform offset for 3D effect
+          layer.on('add', function() {
+            setTimeout(() => {
+              const paths = document.querySelectorAll('.leaflet-overlay-pane svg path');
+              paths.forEach((path, pathIndex) => {
+                if (pathIndex === index) {
+                  if (layerStyle.offset[0] !== 0 || layerStyle.offset[1] !== 0) {
+                    path.style.transform = `translate(${layerStyle.offset[0]}px, ${layerStyle.offset[1]}px)`;
+                  }
+                }
+              });
+            }, 50);
+          });
+
+          layer.addTo(map);
+        });
+
+        // Save default view
+        setTimeout(() => {
+          const indiaLayer = L.geoJSON(indiaData, {
+            style: {
+              color: 'transparent',
+              weight: 0,
+              opacity: 0,
+              fillOpacity: 0
+            }
+          });
+          defaultBounds = indiaLayer.getBounds();
+          map.fitBounds(defaultBounds);
+        }, 100);
+
+        // Enhanced mask for clean edges
+        const indiaPolygons = [];
+
+        if (indiaData.type === "GeometryCollection") {
+          indiaData.geometries.forEach(geometry => {
+            if (geometry.type === "MultiPolygon") {
+              geometry.coordinates.forEach(polygon => {
+                indiaPolygons.push(polygon[0]);
+              });
+            }
+          });
+        } else if (indiaData.type === "FeatureCollection") {
+          indiaData.features.forEach(feature => {
+            if (feature.geometry.type === "MultiPolygon") {
+              feature.geometry.coordinates.forEach(polygon => {
+                indiaPolygons.push(polygon[0]);
+              });
+            } else if (feature.geometry.type === "Polygon") {
+              indiaPolygons.push(feature.geometry.coordinates[0]);
+            }
+          });
+        }
+
+        const maskPolygon = {
+          type: "Feature",
+          properties: {},
+          geometry: {
+            type: "Polygon",
+            coordinates: [
+              [
+                [-180, -90],
+                [180, -90],
+                [180, 90],
+                [-180, 90],
+                [-180, -90]
+              ],
+              ...indiaPolygons
+            ]
+          }
+        };
+
+        L.geoJSON(maskPolygon, {
+          style: {
+       
+            fillColor: '#f8f9fa',
+            fillOpacity: 0.95,
+            interactive: false,
+            color: 'black',
+            weight:0.05
+          }
+        }).addTo(map);
+
+      })
+      .catch(error => {
+        console.error('Error loading India GeoJSON:', error);
+      });
+
+    // Reset button
+    document.getElementById("resetBtn").addEventListener("click", () => {
+      if (defaultBounds) {
+        map.fitBounds(defaultBounds, {
+          padding: [20, 20],
+          animate: true,
+          duration: 1
+        });
+      } else {
+        map.setView([22.9734, 78.6569], 5);
+      }
+    });
+
+    // smooth zoom controls
+    map.zoomControl.setPosition('bottomright');
+
+  </script>
+
+  <script src="states/maharashtra.js"></script>
+  <script src="states/uttarpradesh.js"></script>
+  <script src="states/tamilnadu.js"></script>
+
+</body>
+
+</html>
